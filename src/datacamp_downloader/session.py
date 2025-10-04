@@ -33,9 +33,13 @@ class Session:
         self.datacamp = self.load_datacamp()
 
     def save(self):
+        # Temporarily set session to None for pickling
+        temp_session = self.datacamp.session
         self.datacamp.session = None
         pickled = pickle.dumps(self.datacamp)
         self.savefile.write_bytes(pickled)
+        # Restore the session reference
+        self.datacamp.session = temp_session
 
     def load_datacamp(self):
         if self.savefile.exists():
@@ -81,7 +85,7 @@ class Session:
 
         # get the absolute path of the installed package
         package_dir = os.path.dirname(os.path.abspath(__file__))
-        
+
         # create a chrome profile folder inside the package directory
         profile_dir = os.path.join(package_dir, "dc_chrome_profile")
 
@@ -90,7 +94,6 @@ class Session:
 
         # tell Chrome to use it
         options.add_argument(f"--user-data-dir={profile_dir}")
-
 
         service = ChromeService(executable_path=ChromeDriverManager().install())
         try:
@@ -109,10 +112,29 @@ class Session:
             self.add_token(self.datacamp.token)
 
     def bypass_cloudflare(self, url):
+        import time
+
         try:
-            self.get_element_by_id("cf-spinner-allow-5-secs")
-            with self.driver:
-                self.driver.get(url)
+            # Wait a bit for cloudflare challenge to appear/complete
+            time.sleep(2)
+
+            # Check if we see cloudflare challenge
+            if (
+                "Just a moment" in self.driver.page_source
+                or "cf-spinner" in self.driver.page_source
+            ):
+                # Wait up to 15 seconds for cloudflare to complete
+                max_wait = 15
+                waited = 0
+                while waited < max_wait and (
+                    "Just a moment" in self.driver.page_source
+                    or "cf-spinner" in self.driver.page_source
+                ):
+                    time.sleep(1)
+                    waited += 1
+
+                # Give it one more second after challenge completes
+                time.sleep(1)
         except:
             pass
 
@@ -121,8 +143,6 @@ class Session:
         self.driver.get(url)
         self.bypass_cloudflare(url)
         return self.driver.page_source
-
-
 
     def get_json(self, url):
         page = self.get(url).strip()
@@ -137,7 +157,7 @@ class Session:
             page = page  # maybe raw JSON already
 
         # Debug
-        #print("\n\n[DEBUG get_json cleaned] First 200 chars:\n", page[:200], "\n\n")
+        # print("\n\n[DEBUG get_json cleaned] First 200 chars:\n", page[:200], "\n\n")
 
         return json.loads(page)
 

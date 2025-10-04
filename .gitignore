@@ -130,3 +130,34 @@ dmypy.json
 .idea/
 .vscode/
 Datacamp/
+
+.conda/
+
+# ignore chrome profile
+chromeprofile/
+dc_chrome_profile/
+
+# DataCamp session and tokens
+.datacamp
+*.pkl
+token.txt
+.token
+
+# Test files and temporary downloads
+test_*.py
+debug_*.py
+simple_*.py
+check_*.py
+show_*.py
+final_*.py
+download_*.py
+try_*.py
+*_test.py
+course_*.json
+ONGOING_*.md
+DOWNLOAD_*.md
+
+# Downloaded course folders
+MyDataCampCourses/
+PostgreSQL_Course_*/
+*_Course_*/

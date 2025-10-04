@@ -68,6 +68,16 @@ def courses(
 
 
 @app.command()
+def ongoing(
+    refresh: Optional[bool] = typer.Option(
+        False, "--refresh", "-r", is_flag=True, help="Refresh enrolled courses."
+    )
+):
+    """List your ongoing/enrolled courses (not yet completed)."""
+    datacamp.list_enrolled_courses(refresh)
+
+
+@app.command()
 def download(
     ids: List[str] = typer.Argument(
         ...,
@@ -170,3 +180,149 @@ def download(
 def reset():
     """Restart the session."""
     active_session.reset()
+
+
+@app.command()
+def download_ongoing(
+    course_ids: List[int] = typer.Argument(
+        ...,
+        help="Course IDs to download (e.g., 14519 25475 33509).",
+    ),
+    path: Path = typer.Option(
+        Path(os.getcwd() + "/Datacamp"),
+        "--path",
+        "-p",
+        help="Path to the download directory.",
+        dir_okay=True,
+        file_okay=False,
+    ),
+    slides: Optional[bool] = typer.Option(
+        True,
+        "--slides/--no-slides",
+        help="Download slides.",
+    ),
+    datasets: Optional[bool] = typer.Option(
+        True,
+        "--datasets/--no-datasets",
+        help="Download datasets.",
+    ),
+    videos: Optional[bool] = typer.Option(
+        True,
+        "--videos/--no-videos",
+        help="Download videos.",
+    ),
+    exercises: Optional[bool] = typer.Option(
+        True,
+        "--exercises/--no-exercises",
+        help="Download exercises.",
+    ),
+    subtitles: Optional[List[Language]] = typer.Option(
+        [Language.EN.value],
+        "--subtitles",
+        "-st",
+        help="Choose subtitles to download.",
+        case_sensitive=False,
+    ),
+    audios: Optional[bool] = typer.Option(
+        False,
+        "--audios/--no-audios",
+        help="Download audio files.",
+    ),
+    scripts: Optional[bool] = typer.Option(
+        True,
+        "--scripts/--no-scripts",
+        "--transcript/--no-transcript",
+        show_default=True,
+        help="Download scripts or transcripts.",
+    ),
+    overwrite: Optional[bool] = typer.Option(
+        False,
+        "--overwrite",
+        "-w",
+        flag_value=True,
+        is_flag=True,
+        help="Overwrite files if exist.",
+    ),
+):
+    """Download ongoing/enrolled courses by their course IDs.
+    
+    This command downloads courses that are enrolled but not yet completed.
+    Use course IDs from the 'ongoing' command.
+
+    Example: `datacamp download-ongoing 14519 25475 33509`
+    """
+    import requests
+    from .templates.course import Course
+    
+    # Get token from active session
+    if not datacamp.token:
+        Logger.error("Please login first using 'set-token' command!")
+        return
+    
+    Logger.info(f"Fetching {len(course_ids)} ongoing course(s)...")
+    
+    headers = {
+        "Authorization": f"Bearer {datacamp.token}",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+    }
+    
+    # Fetch and add each course to the download list
+    courses_to_download = []
+    
+    for course_id in course_ids:
+        Logger.info(f"Fetching course {course_id}...")
+        
+        try:
+            response = requests.get(
+                f"https://campus-api.datacamp.com/api/courses/{course_id}",
+                headers=headers
+            )
+            
+            if response.status_code != 200:
+                Logger.error(f"Failed to fetch course {course_id} (Status: {response.status_code})")
+                continue
+            
+            course_data = response.json()
+            
+            # Create Course object
+            course = Course(
+                id=course_data['id'],
+                title=course_data['title'],
+                description=course_data.get('description', ''),
+                slug=course_data.get('slug'),
+                datasets=course_data.get('datasets', []),
+                chapters=course_data.get('chapters', []),
+                time_needed=f"{course_data.get('time_needed_in_hours', 2)} hours"
+            )
+            
+            # Add to datacamp courses with order number
+            course.order = len(datacamp.courses) + 1
+            datacamp.courses.append(course)
+            courses_to_download.append(course.order)
+            
+            Logger.info(f"✓ {course.title} (Order: {course.order})")
+            
+        except Exception as e:
+            Logger.error(f"Error fetching course {course_id}: {e}")
+            continue
+    
+    if not courses_to_download:
+        Logger.error("No courses to download!")
+        return
+    
+    # Download all fetched courses
+    Logger.info(f"\nDownloading {len(courses_to_download)} course(s) to {path}...")
+    
+    datacamp.download(
+        courses_to_download,
+        path,
+        slides=slides,
+        datasets=datasets,
+        videos=videos,
+        exercises=exercises,
+        subtitles=subtitles,
+        audios=audios,
+        scripts=scripts,
+        overwrite=overwrite,
+        last_attempt=False,  # No last attempt for ongoing courses
+    )

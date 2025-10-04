@@ -55,7 +55,7 @@ def animate_wait(f):
     done = False
 
     def animate():
-        for c in itertools.cycle(list("/—\|")):
+        for c in itertools.cycle(list("/—\\|")):
             if done:
                 Logger.clear()
                 break
@@ -63,13 +63,13 @@ def animate_wait(f):
                 print("\rPlease wait " + c, end="", flush=True)
             time.sleep(0.1)
 
-    def wrapper(*args):
+    def wrapper(*args, **kwargs):
         nonlocal done
         done = False
         t = threading.Thread(target=animate)
         t.daemon = True
         t.start()
-        output = f(*args)
+        output = f(*args, **kwargs)
         done = True
         return output
 
