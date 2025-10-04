@@ -1,65 +1,92 @@
-# Datacamp Downloader
+# Datacamp Downloader (Enhanced Fork)
 
-[![GitHub license](https://img.shields.io/github/license/TRoboto/datacamp-downloader)](https://github.com/TRoboto/datacamp-downloader/blob/master/LICENSE)
-[![PyPI version](https://badge.fury.io/py/datacamp-downloader.svg)](https://pypi.org/project/datacamp-downloader/)
-[![Documentation Status](https://readthedocs.org/projects/ansicolortags/badge/?version=latest)](https://github.com/TRoboto/datacamp-downloader/blob/master/docs.md)
+[![GitHub license](https://img.shields.io/github/license/vicky-dx/datacamp-downloader)](https://github.com/vicky-dx/datacamp-downloader/blob/master/LICENSE)
+[![Original Repo](https://img.shields.io/badge/original-TRoboto/datacamp--downloader-blue)](https://github.com/TRoboto/datacamp-downloader)
 
-[![Downloads](https://pepy.tech/badge/datacamp-downloader)](https://pepy.tech/project/datacamp-downloader)
-[![GitHub stars](https://img.shields.io/github/stars/TRoboto/datacamp-downloader)](https://github.com/TRoboto/datacamp-downloader/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/TRoboto/datacamp-downloader)](https://github.com/TRoboto/datacamp-downloader/network/members)
-[![GitHub contributors](https://img.shields.io/github/contributors/TRoboto/datacamp-downloader)](https://github.com/TRoboto/datacamp-downloader/graphs/contributors)
+> **Enhanced Fork** - This is an improved version of the original [datacamp-downloader](https://github.com/TRoboto/datacamp-downloader) by TRoboto with critical bug fixes and new features for downloading **ongoing/in-progress courses**.
 
 ## Table of Contents
 
-- [Datacamp Downloader](#datacamp-downloader)
+- [Datacamp Downloader (Enhanced Fork)](#datacamp-downloader-enhanced-fork)
+  - [What's New in This Fork](#whats-new-in-this-fork)
   - [Table of Contents](#table-of-contents)
   - [Description](#description)
   - [Installation](#installation)
-    - [PIP](#pip)
-    - [From source](#from-source)
+    - [From Source (Recommended)](#from-source-recommended)
     - [Autocompletion](#autocompletion)
   - [Documentation](#documentation)
   - [Getting Started](#getting-started)
     - [Login](#login)
-    - [Download](#download)
+    - [Download Completed Courses](#download-completed-courses)
+    - [🆕 Download Ongoing Courses](#-download-ongoing-courses)
   - [User Privacy](#user-privacy)
   - [Disclaimer](#disclaimer)
 
+## What's New in This Fork
+
+This enhanced version includes several critical improvements over the original:
+
+### 🐛 **Critical Bug Fixes**
+- ✅ **Session Management Bug** - Fixed session reference being lost after save/load operations
+- ✅ **Decorator Bug** - Fixed `animate_wait` decorator to properly accept keyword arguments
+- ✅ **Escape Sequence Warning** - Fixed invalid escape sequence in progress animations
+- ✅ **Exercise Download Bug** - Added proper None checking to prevent crashes when exercises are missing
+- ✅ **Cloudflare Bypass** - Improved reliability with better wait logic
+
+### 🎁 **New Features**
+- ⭐ **Download Ongoing Courses** - Now you can download courses you haven't completed yet!
+- ⭐ **List Enrolled Courses** - View all your in-progress courses with the `ongoing` command
+- ⭐ **Direct API Access** - Bypass browser automation for faster ongoing course downloads
+- ⭐ **Enhanced CLI** - New `download-ongoing` command with full option support
+
+### 📚 **Better Documentation**
+- Complete CLI usage guide
+- Quick start reference
+- Comprehensive project summary
+
+**All improvements are fully backward compatible with the original tool!**
+
 ## Update
 
-Datacamp Downloader V3.2 is now available. The major change is that the tool now uses selenium for the backend. See changelog for version [3.0](https://github.com/TRoboto/datacamp-downloader/pull/39), [3.1](https://github.com/TRoboto/datacamp-downloader/pull/42)
+**Enhanced Fork - October 2025**
+
+This fork includes critical bug fixes and new features for downloading ongoing/in-progress courses. See [What's New](#whats-new-in-this-fork) section above.
+
+**Original Tool - V3.2**
+
+The original Datacamp Downloader V3.2 uses Selenium for the backend. See original changelog for version [3.0](https://github.com/TRoboto/datacamp-downloader/pull/39), [3.1](https://github.com/TRoboto/datacamp-downloader/pull/42)
 and [3.2](https://github.com/TRoboto/datacamp-downloader/pull/47).
 
 ## Description
 
-Datacamp Downloader is a command-line interface tool developed in Python
-in order to help you download your completed contents on [Datacamp](https://datacamp.com)
-and keep them locally on your computer.
+Datacamp Downloader is a command-line interface tool developed in Python to help you download your contents on [Datacamp](https://datacamp.com) and keep them locally on your computer.
+
+**This enhanced fork** adds the ability to download **ongoing/in-progress courses** that you haven't completed yet, along with critical bug fixes and improvements.
 
 Datacamp Downloader helps you download all videos, slides, audios, exercises, transcripts, datasets and subtitles in organized folders.
 
-The design and development of this tool was inspired by [udacimak](https://github.com/udacimak/udacimak)
+The original design and development of this tool was inspired by [udacimak](https://github.com/udacimak/udacimak). This fork is based on [TRoboto's datacamp-downloader](https://github.com/TRoboto/datacamp-downloader).
 
 **Datacampers!**
 
-If you find this CLI helpful, please support the developers by starring this repository.
+If you find this enhanced fork helpful, please support the developers by starring this repository!
 
 ## Installation
 
-### PIP
+### From Source (Recommended)
 
-If you use pip, you can install datacamp-downloader with:
+You can clone this enhanced fork and install it with:
 
+```bash
+git clone https://github.com/vicky-dx/datacamp-downloader.git
+cd datacamp-downloader
+pip install -e .
 ```
-pip install datacamp-downloader
-```
 
-### From source
+Or install directly from GitHub:
 
-You can directly clone this repo and install the tool with:
-
-```
-pip install git+https://github.com/TRoboto/datacamp-downloader.git
+```bash
+pip install git+https://github.com/vicky-dx/datacamp-downloader.git
 ```
 
 ### Autocompletion
@@ -76,28 +103,28 @@ Then restart the terminal.
 
 ## Documentation
 
-The available commands with full documentation can be found in [docs](https://github.com/TRoboto/datacamp-downloader/blob/master/docs.md)
+The available commands with full documentation can be found in:
+- [CLI Usage Guide](CLI_USAGE_GUIDE.md) - Complete command reference with examples
+- [Quick Start Guide](QUICK_START.md) - Quick reference for all commands
+- [Project Summary](PROJECT_SUMMARY.md) - Technical details of all improvements
+- [Original Docs](https://github.com/TRoboto/datacamp-downloader/blob/master/docs.md) - Original documentation
 
 ## Getting Started
 
 ### Login
 
-- To login using your username or password, run:
+**Option 1: Using Datacamp Authentication Token (Recommended)**
 
-```
-datacamp login -u [USERNAME] -p [PASSWORD]
-```
+To login using your Datacamp authentication token, run:
 
-or simply run:
-
-```
-datacamp login
-```
-
-- To login using Datacamp authentication token, run:
-
-```
+```bash
 datacamp set-token [TOKEN]
+```
+
+Or using the CLI wrapper:
+
+```bash
+python cli.py set-token [TOKEN]
 ```
 
 Datacamp authentication token can be found in Datacamp website browser _cookies_.
@@ -132,9 +159,11 @@ Hi, YOUR_NAME
 Active subscription found
 ```
 
-> Active subscription is not required anymore.
+> **Note:** Active subscription is not required to use this tool.
 
-### Download
+---
+
+### Download Completed Courses
 
 First, you should list your completed courses/track.
 
@@ -204,7 +233,77 @@ datacamp download all-t
 
 This by default will download **videos**, **slides**, **datasets**, **exercises**, **english subtitles** and **transcripts** in organized folders in the **current directory**.
 
-To customize this behavior see `datacamp download` command in the [docs](https://github.com/TRoboto/datacamp-downloader/blob/master/docs.md).
+To customize this behavior see `datacamp download` command in the [CLI Usage Guide](CLI_USAGE_GUIDE.md).
+
+---
+
+### 🆕 Download Ongoing Courses
+
+**NEW FEATURE** - This fork now supports downloading ongoing/in-progress courses!
+
+First, list your enrolled (ongoing) courses:
+
+```bash
+datacamp ongoing
+# or
+python cli.py ongoing
+```
+
+You'll see something like:
+
+```
++--------+------------------------------------------+------------+
+| ID     | Title                                    | Progress   |
++--------+------------------------------------------+------------+
+| 14519  | PostgreSQL Summary Stats and Window...   | 25%        |
++--------+------------------------------------------+------------+
+| 25475  | Introduction to Cloud Computing          | 50%        |
++--------+------------------------------------------+------------+
+| 33509  | Introduction to Snowflake SQL            | 10%        |
++--------+------------------------------------------+------------+
+```
+
+Now download any ongoing course by its **actual ID** (not order number):
+
+```bash
+datacamp download-ongoing 14519
+# or
+python cli.py download-ongoing 14519
+```
+
+**Download with custom options:**
+
+```bash
+# Custom download path
+python cli.py download-ongoing 14519 --path "./PostgreSQL_Course"
+
+# Skip videos (download only exercises and slides)
+python cli.py download-ongoing 14519 --no-videos
+
+# Skip exercises
+python cli.py download-ongoing 14519 --no-exercises
+
+# Download only videos
+python cli.py download-ongoing 14519 --no-slides --no-datasets --no-exercises
+```
+
+**Download multiple ongoing courses:**
+
+```bash
+python cli.py download-ongoing 14519 25475 33509
+```
+
+The `download-ongoing` command supports all the same options as the regular `download` command:
+- `--path` - Custom download directory
+- `--no-videos` - Skip video downloads
+- `--no-slides` - Skip slide downloads
+- `--no-datasets` - Skip dataset downloads
+- `--no-exercises` - Skip exercise downloads
+- `--no-subtitles` - Skip subtitle downloads
+
+See [CLI_USAGE_GUIDE.md](CLI_USAGE_GUIDE.md) for complete documentation.
+
+---
 
 ## User Privacy
 
@@ -219,3 +318,21 @@ datacamp reset
 This CLI is provided to help you download Datacamp courses/tracks for personal use only. Sharing the content of the courses is strictly prohibited under [Datacamp's Terms of Use](https://www.datacamp.com/terms-of-use/).
 
 By using this CLI, the developers of this CLI are not responsible for any law infringement caused by the users of this CLI.
+
+---
+
+## Credits
+
+- **Original Author**: [TRoboto](https://github.com/TRoboto) - [Original Repository](https://github.com/TRoboto/datacamp-downloader)
+- **Enhanced Fork**: [vicky-dx](https://github.com/vicky-dx) - Added ongoing course support and critical bug fixes
+- **Inspiration**: [udacimak](https://github.com/udacimak/udacimak)
+
+---
+
+## Contributing
+
+Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/vicky-dx/datacamp-downloader/issues).
+
+## License
+
+This project maintains the same license as the original repository. See [LICENSE](LICENSE) file for details.
