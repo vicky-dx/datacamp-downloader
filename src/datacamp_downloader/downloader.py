@@ -77,6 +77,32 @@ def ongoing(
     datacamp.list_enrolled_courses(refresh)
 
 
+@app.command(name="skill-tracks")
+def skill_tracks(
+    filter: Optional[str] = typer.Option(
+        "all",
+        "--filter",
+        "-f",
+        help="Filter tracks: all, enrolled, active, completed, foundational, certification"
+    )
+):
+    """List available DataCamp skill tracks.
+    
+    Skill tracks are curated learning paths focused on specific skills.
+    
+    Filters:
+    - all: Show all available skill tracks (default)
+    - enrolled: Show only enrolled tracks
+    - active: Show only active tracks  
+    - completed: Show only completed tracks
+    - foundational: Show foundational tracks
+    - certification: Show tracks with certification available
+    
+    Example: `datacamp skill-tracks --filter foundational`
+    """
+    datacamp.list_skill_tracks(filter)
+
+
 @app.command()
 def download(
     ids: List[str] = typer.Argument(
@@ -163,6 +189,95 @@ def download(
     Logger.show_warnings = warnings
     datacamp.download(
         ids,
+        path,
+        slides=slides,
+        datasets=datasets,
+        videos=videos,
+        exercises=exercises,
+        subtitles=subtitles,
+        audios=audios,
+        scripts=scripts,
+        overwrite=overwrite,
+        last_attempt=python_file,
+    )
+
+
+@app.command()
+def download_skill_track(
+    track_id: int = typer.Argument(
+        ...,
+        help="Skill Track ID to download (use 'skill-tracks' command to see available tracks).",
+    ),
+    path: Path = typer.Option(
+        Path(os.getcwd() + "/Datacamp"),
+        "--path",
+        "-p",
+        help="Path to the download directory.",
+        dir_okay=True,
+        file_okay=False,
+    ),
+    slides: Optional[bool] = typer.Option(
+        True,
+        "--slides/--no-slides",
+        help="Download slides.",
+    ),
+    datasets: Optional[bool] = typer.Option(
+        True,
+        "--datasets/--no-datasets",
+        help="Download datasets.",
+    ),
+    videos: Optional[bool] = typer.Option(
+        True,
+        "--videos/--no-videos",
+        help="Download videos.",
+    ),
+    exercises: Optional[bool] = typer.Option(
+        True,
+        "--exercises/--no-exercises",
+        help="Download exercises.",
+    ),
+    subtitles: Optional[List[Language]] = typer.Option(
+        [Language.EN.value],
+        "--subtitles",
+        "-st",
+        help="Choose subtitles to download (e.g., en, es, fr).",
+        case_sensitive=False,
+    ),
+    audios: Optional[bool] = typer.Option(
+        False,
+        "--audios/--no-audios",
+        help="Download audios.",
+    ),
+    scripts: Optional[bool] = typer.Option(
+        True,
+        "--scripts/--no-scripts",
+        help="Download scripts.",
+    ),
+    python_file: Optional[bool] = typer.Option(
+        False,
+        "--python-file",
+        "-py",
+        help="Download exercises on last attempt as Python files instead of Markdown.",
+    ),
+    overwrite: Optional[bool] = typer.Option(
+        False,
+        "--overwrite",
+        "-o",
+        help="Overwrite existing files.",
+    ),
+):
+    """
+    Download all courses from a skill track.
+    
+    First, use 'skill-tracks' command to browse available tracks and get their IDs.
+    Then use this command to download all courses in that track.
+    
+    Example:
+        python cli.py skill-tracks --filter foundational
+        python cli.py download-skill-track 44 --path ./MyDownloads
+    """
+    datacamp.download_skill_track(
+        track_id,
         path,
         slides=slides,
         datasets=datasets,

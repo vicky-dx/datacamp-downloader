@@ -161,3 +161,9 @@ DOWNLOAD_*.md
 MyDataCampCourses/
 PostgreSQL_Course_*/
 *_Course_*/
+
+# Documentation folder (personal notes)
+docs/
+
+# Test folders
+test_*/

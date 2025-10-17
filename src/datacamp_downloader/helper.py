@@ -145,3 +145,176 @@ def fix_track_link(link):
     else:
         link += "?embedded=true"
     return link
+
+
+# ============================================================================
+# Course JSON Helper Functions
+# ============================================================================
+
+def get_course_summary(course):
+    """Extract summary information from Course object.
+    
+    Args:
+        course: Course object with JSON data
+        
+    Returns:
+        dict: Summary with id, title, chapters count, exercises count, duration
+    """
+    total_exercises = sum(chapter.nb_exercises for chapter in course.chapters)
+    total_videos = sum(chapter.number_of_videos for chapter in course.chapters)
+    
+    return {
+        "id": course.id,
+        "title": course.title,
+        "slug": course.slug,
+        "chapters": len(course.chapters),
+        "exercises": total_exercises,
+        "videos": total_videos,
+        "duration": course.time_needed,
+        "difficulty": getattr(course, 'difficulty_level', 'N/A'),
+        "language": getattr(course, 'programming_language', 'unknown'),
+    }
+
+
+def get_course_instructors(course):
+    """Extract instructor names from Course object.
+    
+    Args:
+        course: Course object with instructors
+        
+    Returns:
+        list: List of instructor full names
+    """
+    return [instructor.full_name for instructor in course.instructors]
+
+
+def get_course_datasets(course):
+    """Extract dataset information from Course object.
+    
+    Args:
+        course: Course object with datasets
+        
+    Returns:
+        list: List of dicts with dataset name and URL
+    """
+    return [
+        {"name": dataset.name, "url": dataset.asset_url}
+        for dataset in course.datasets
+    ]
+
+
+def get_chapter_summary(chapter):
+    """Extract summary information from Chapter object.
+    
+    Args:
+        chapter: Chapter object
+        
+    Returns:
+        dict: Summary with number, title, exercises, videos, XP
+    """
+    return {
+        "number": chapter.number,
+        "title": chapter.title,
+        "exercises": chapter.nb_exercises,
+        "videos": chapter.number_of_videos,
+        "xp": chapter.xp,
+        "slides_available": bool(chapter.slides_link),
+    }
+
+
+def get_course_chapters_info(course):
+    """Get detailed info about all chapters in a course.
+    
+    Args:
+        course: Course object
+        
+    Returns:
+        list: List of chapter summaries
+    """
+    return [get_chapter_summary(chapter) for chapter in course.chapters]
+
+
+def get_course_total_xp(course):
+    """Calculate total XP available in a course.
+    
+    Args:
+        course: Course object
+        
+    Returns:
+        int: Total XP from all chapters
+    """
+    return sum(chapter.xp for chapter in course.chapters)
+
+
+def get_video_exercises(chapter):
+    """Extract only video exercises from a chapter.
+    
+    Args:
+        chapter: Chapter object
+        
+    Returns:
+        list: List of video Exercise objects
+    """
+    from .templates.course import TypeEnum
+    return [
+        ex for ex in chapter.exercises 
+        if ex.type == TypeEnum.VIDEO_EXERCISE
+    ]
+
+
+def get_practice_exercises(chapter):
+    """Extract only practice (non-video) exercises from a chapter.
+    
+    Args:
+        chapter: Chapter object
+        
+    Returns:
+        list: List of practice Exercise objects (Normal + MultipleChoice)
+    """
+    from .templates.course import TypeEnum
+    return [
+        ex for ex in chapter.exercises 
+        if ex.type in [TypeEnum.NORMAL_EXERCISE, TypeEnum.MULTIPLE_CHOICE_EXERCISE]
+    ]
+
+
+def format_course_metadata(course):
+    """Format course metadata for display or saving.
+    
+    Args:
+        course: Course object
+        
+    Returns:
+        str: Formatted metadata string
+    """
+    lines = [
+        f"Course: {course.title}",
+        f"ID: {course.id}",
+        f"Slug: {course.slug}",
+        f"Duration: {course.time_needed}",
+        f"Difficulty: {getattr(course, 'difficulty_level', 'N/A')}",
+        f"Language: {getattr(course, 'programming_language', 'unknown')}",
+        f"Chapters: {len(course.chapters)}",
+        f"Total XP: {get_course_total_xp(course)}",
+        "",
+        "Instructors:",
+    ]
+    
+    for instructor in get_course_instructors(course):
+        lines.append(f"  - {instructor}")
+    
+    if course.datasets:
+        lines.append("")
+        lines.append("Datasets:")
+        for dataset in get_course_datasets(course):
+            lines.append(f"  - {dataset['name']}")
+    
+    lines.append("")
+    lines.append("Chapters Overview:")
+    for ch_info in get_course_chapters_info(course):
+        lines.append(
+            f"  {ch_info['number']}. {ch_info['title']} "
+            f"({ch_info['exercises']} exercises, {ch_info['videos']} videos, {ch_info['xp']} XP)"
+        )
+    
+    return "\n".join(lines)
